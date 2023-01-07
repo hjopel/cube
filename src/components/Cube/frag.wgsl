@@ -7,6 +7,7 @@ struct LightData {
 };
 
 struct FragmentInput { // output from vertex stage shader
+    @builtin(position) coord_in: vec4<f32>,
     @location(0) fragColor: vec3<f32>,
     @location(1) fragNorm: vec3<f32>,
     @location(2) uv: vec2<f32>,
@@ -29,6 +30,11 @@ fn main(input: FragmentInput) -> @location(0) vec4<f32> {
     lightFactor = lambertFactor;
 
     let lightingFactor: f32 = max(min(lightFactor, 1.0), ambientLightFactor);
+
+    var border: f32 = 0.0;
+    if((input.uv.x <= 0.05 || input.uv.y <= 0.05) || (input.uv.x >= 0.95 || input.uv.y >= 0.95)) {
+        return vec4<f32>(0.0, 0.0, 0.0, 1.0);
+    }
     return vec4<f32>(input.fragColor * lightingFactor, 1.0);
 }
 

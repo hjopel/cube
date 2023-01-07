@@ -49,9 +49,9 @@ export class Cube {
   public scaleZ: number = 0;
 
   private defaultColor: Color = {
-    r: 0.9,
-    g: 0.6,
-    b: 0.1,
+    r: 1.0,
+    g: 1.0,
+    b: 1.0,
   };
 
   private sizePerVertex = 3 + 3 + 2; // 3 (position), 3 (normal), 2 (uv)
