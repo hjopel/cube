@@ -23,7 +23,7 @@ function App() {
 
     camera = new Camera(window.innerWidth / window.innerHeight);
     camera.z = 10;
-    camera.y = 10;
+    // camera.y = 0;
     scene = new Scene();
     renderer = new WebGPURenderer();
     try {
@@ -108,7 +108,10 @@ function App() {
 
   const doFrame = () => {
     const now = Date.now() / 1000;
-    cubes[0].rotY = cubes[1].rotY = 90;
+
+    cubes[0].rotX = Math.cos(now);
+    cubes[1].rotY = Math.cos(now);
+    cubes[2].rotZ = Math.cos(now);
 
     scene.pointLightPosition[0] = Math.cos(now) * 4;
     scene.pointLightPosition[1] = Math.sin(now) * 4;
