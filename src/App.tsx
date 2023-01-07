@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./App.css";
 import { Camera } from "./components/Camera";
-import { Cube } from "./components/Cube/Cube";
+import { Cube, CubeParameters } from "./components/Cube/Cube";
 import { WebGPURenderer } from "./components/Renderer";
 import { Scene } from "./components/Scene";
 
@@ -13,6 +13,25 @@ function App() {
   let camera: Camera;
 
   const cubes: Cube[] = [];
+  const cubeLayout: CubeParameters[] = [
+    {
+      x: -2,
+      y: -2,
+    },
+    {
+      x: 0,
+      y: -2,
+    },
+    { x: 2, y: -2 },
+    {
+      x: -2,
+    },
+    { x: 0 },
+    { x: 2 },
+    { x: -2, y: 2 },
+    { y: 2 },
+    { x: 2, y: 2 },
+  ];
   const init = async () => {
     const adapter: GPUAdapter | null = await navigator.gpu.requestAdapter();
     const dvc: GPUDevice | undefined = await adapter?.requestDevice();
@@ -29,34 +48,17 @@ function App() {
     try {
       await renderer.init({ device: dvc, context, canvas: canvasRef.current! });
 
-      // unscaled cubes
-      const cube1 = new Cube({
-        device: dvc,
-        parameters: { x: -4 },
-        // color: { r: 0.9, g: 0.01, b: 0.01 },
-        lightDataBuffer: renderer.lightDataBuffer,
-        cameraUniformBuffer: renderer.cameraUniformBuffer,
-      });
-      const cube2 = new Cube({
-        device: dvc,
-        // parameters: { y: 4 },
-        // color: { r: 1.0, g: 1.0, b: 0.9 },
-        lightDataBuffer: renderer.lightDataBuffer,
-        cameraUniformBuffer: renderer.cameraUniformBuffer,
-      });
-      const cube3 = new Cube({
-        device: dvc,
-        parameters: { x: 4 },
-        // color: { r: 0.01, g: 0.01, b: 0.9 },
-        lightDataBuffer: renderer.lightDataBuffer,
-        cameraUniformBuffer: renderer.cameraUniformBuffer,
-      });
-
-      scene.add(cube1);
-      scene.add(cube2);
-      scene.add(cube3);
-
-      cubes.push(cube1, cube2, cube3);
+      cubeLayout.map((param) =>
+        scene.add(
+          new Cube({
+            device: dvc,
+            parameters: param,
+            // color: { r: 0.01, g: 0.01, b: 0.9 },
+            lightDataBuffer: renderer.lightDataBuffer,
+            cameraUniformBuffer: renderer.cameraUniformBuffer,
+          })
+        )
+      );
 
       const lightDebugCube = new Cube({
         parameters: { scaleX: 0.1, scaleY: 0.1, scaleZ: 0.1 },
@@ -74,19 +76,20 @@ function App() {
       console.error(err);
     }
 
+    window.onresize = () => {
+      if (canvasRef.current) {
+        canvasRef.current.width = window.innerWidth;
+        canvasRef.current.height = window.innerHeight;
+        camera.aspect = window.innerWidth / window.innerHeight;
+        renderer.update();
+      }
+    };
+
     requestAnimationFrame(doFrame);
   };
 
   const doFrame = () => {
     const now = Date.now() / 1000;
-
-    // cubes[0].rotX = Math.cos(now);
-    // cubes[1].rotY = Math.cos(now);
-    // cubes[1].rotX = Math.cos(now);
-    // cubes[2].rotZ = Math.cos(now);
-
-    // scene.pointLightPosition[0] = Math.cos(now) * 4;
-    // scene.pointLightPosition[1] = Math.sin(now) * 4;
     scene.pointLightPosition[2] = 10;
     cubes[cubes.length - 1].x = scene.pointLightPosition[0];
     cubes[cubes.length - 1].y = scene.pointLightPosition[1];
