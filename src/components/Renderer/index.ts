@@ -116,7 +116,10 @@ export class WebGPURenderer {
   private depthTextureView() {
     return this.device
       .createTexture({
-        size: [600 * devicePixelRatio, 600 * devicePixelRatio],
+        size: [
+          window.innerWidth * devicePixelRatio,
+          window.innerHeight * devicePixelRatio,
+        ],
         format: "depth24plus-stencil8",
         usage: GPUTextureUsage.RENDER_ATTACHMENT,
       })

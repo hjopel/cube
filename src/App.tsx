@@ -11,6 +11,8 @@ function App() {
   let renderer: WebGPURenderer;
   let scene: Scene;
   let camera: Camera;
+
+  const cubes: Cube[] = [];
   const init = async () => {
     const adapter: GPUAdapter | null = await navigator.gpu.requestAdapter();
     const dvc: GPUDevice | undefined = await adapter?.requestDevice();
@@ -19,7 +21,7 @@ function App() {
       return;
     }
 
-    camera = new Camera(600 / 600);
+    camera = new Camera(window.innerWidth / window.innerHeight);
     camera.z = 10;
     camera.y = 10;
     scene = new Scene();
@@ -54,10 +56,12 @@ function App() {
       scene.add(cube2);
       scene.add(cube3);
 
+      cubes.push(cube1, cube2, cube3);
+
       // scaled cubes
       const cube4 = new Cube({
         device: dvc,
-        parameters: { x: -4, y: 4 },
+        parameters: { x: -4, y: -4 },
         color: { r: 1.0, g: 1.0, b: 0.2 },
         lightDataBuffer: renderer.lightDataBuffer,
         cameraUniformBuffer: renderer.cameraUniformBuffer,
@@ -81,6 +85,8 @@ function App() {
       scene.add(cube5);
       scene.add(cube6);
 
+      cubes.push(cube4, cube5, cube6);
+
       const lightDebugCube = new Cube({
         parameters: { scaleX: 0.1, scaleY: 0.1, scaleZ: 0.1 },
         color: { r: 1.0, g: 1.0, b: 0.0 },
@@ -91,6 +97,8 @@ function App() {
       lightDebugCube.rotX = Math.PI / 4;
       lightDebugCube.rotZ = Math.PI / 4;
       scene.add(lightDebugCube);
+
+      cubes.push(lightDebugCube);
     } catch (err) {
       console.error(err);
     }
@@ -99,6 +107,15 @@ function App() {
   };
 
   const doFrame = () => {
+    const now = Date.now() / 1000;
+    cubes[0].rotY = cubes[1].rotY = 90;
+
+    scene.pointLightPosition[0] = Math.cos(now) * 4;
+    scene.pointLightPosition[1] = Math.sin(now) * 4;
+    scene.pointLightPosition[2] = 2;
+    cubes[cubes.length - 1].x = scene.pointLightPosition[0];
+    cubes[cubes.length - 1].y = scene.pointLightPosition[1];
+    cubes[cubes.length - 1].z = scene.pointLightPosition[2];
     renderer.frame(camera, scene);
     requestAnimationFrame(doFrame);
   };
@@ -111,16 +128,14 @@ function App() {
 
   return (
     <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-      </div>
-      <h1>Rubik's Cube Solver</h1>
       {isGPUAvailable === false ? (
         <p>Please access this site with a WebGPU compatible browser</p>
       ) : (
-        <canvas width={600} height={600} ref={canvasRef} />
+        <canvas
+          width={window.innerWidth}
+          height={window.innerHeight}
+          ref={canvasRef}
+        />
       )}
     </div>
   );
