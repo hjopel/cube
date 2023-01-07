@@ -279,9 +279,9 @@ export class Cube {
     this.rotY = parameters.rotY ?? 0;
     this.rotZ = parameters.rotZ ?? 0;
 
-    this.scaleX = parameters.scaleX ?? 0;
-    this.scaleY = parameters.scaleY ?? 0;
-    this.scaleZ = parameters.scaleZ ?? 0;
+    this.scaleX = parameters.scaleX ?? 1;
+    this.scaleY = parameters.scaleY ?? 1;
+    this.scaleZ = parameters.scaleZ ?? 1;
   }
 
   private updateTransformationMatrix() {
