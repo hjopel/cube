@@ -150,12 +150,12 @@ export class Cube {
         cullMode: "back",
       },
       // Enable depth testing so that the fragment closest to the camera
-      // // is rendered in front.
-      // depthStencil: {
-      //   depthWriteEnabled: true,
-      //   depthCompare: "less",
-      //   format: "depth24plus-stencil8",
-      // },
+      // is rendered in front.
+      depthStencil: {
+        depthWriteEnabled: true,
+        depthCompare: "less",
+        format: "depth24plus-stencil8",
+      },
       layout: device.createPipelineLayout({
         bindGroupLayouts: [bindGroupLayout],
       }),
@@ -270,10 +270,10 @@ export class Cube {
   }
 
   private setTransformation(parameters?: CubeParameters) {
-    if (!parameters) return;
+    if (!parameters) parameters = {};
     this.x = parameters.x ?? 0;
-    this.y = parameters.x ?? 0;
-    this.z = parameters.x ?? 0;
+    this.y = parameters.y ?? 0;
+    this.z = parameters.z ?? 0;
 
     this.rotX = parameters.rotX ?? 0;
     this.rotY = parameters.rotY ?? 0;

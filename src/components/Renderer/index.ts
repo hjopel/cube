@@ -36,16 +36,16 @@ export class WebGPURenderer {
           storeOp: "store",
         } as unknown as GPURenderPassColorAttachment,
       ],
-      // depthStencilAttachment: {
-      //   view: this.depthTextureView(),
+      depthStencilAttachment: {
+        view: this.depthTextureView(),
 
-      //   depthLoadOp: "clear",
-      //   depthClearValue: 1.0,
-      //   depthStoreOp: "store",
-      //   stencilLoadOp: "clear",
-      //   stencilClearValue: 0,
-      //   stencilStoreOp: "store",
-      // } as GPURenderPassDepthStencilAttachment,
+        depthLoadOp: "clear",
+        depthClearValue: 1.0,
+        depthStoreOp: "store",
+        stencilLoadOp: "clear",
+        stencilClearValue: 0,
+        stencilStoreOp: "store",
+      } as GPURenderPassDepthStencilAttachment,
     };
 
     this.cameraUniformBuffer = device.createBuffer({
