@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./App.css";
 import { Camera } from "./components/Camera";
 import { Cube, CubeParameters } from "./components/Cube/Cube";
@@ -11,6 +11,9 @@ function App() {
   let renderer: WebGPURenderer;
   let scene: Scene;
   let camera: Camera;
+  let isMouseDown: boolean = false;
+  let lastX: number = -1;
+  let lastY: number = -1;
 
   const cubes: Cube[] = [];
   const cubeLayout: CubeParameters[] = [
@@ -85,18 +88,51 @@ function App() {
       }
     };
 
+    if (canvasRef.current) {
+      canvasRef.current.onpointerdown = (e: PointerEvent) => {
+        isMouseDown = true;
+        lastX = e.x;
+        lastY = e.y;
+      };
+      canvasRef.current.onpointerup = (e: PointerEvent) => {
+        isMouseDown = false;
+      };
+      canvasRef.current.onwheel = (e: WheelEvent) => {
+        const delta = e.deltaY / 100;
+
+        if (camera.z > -delta) {
+          camera.z += delta;
+        }
+      };
+
+      canvasRef.current.onpointermove = (e: PointerEvent) => {
+        if (!isMouseDown) return;
+        const { x, y } = e;
+
+        if (lastX > 0 && lastY > 0) {
+          const roty = x - lastX;
+          const rotx = y - lastY;
+
+          camera.rotY += roty / 100;
+          camera.rotX += rotx / 100;
+        }
+
+        lastX = x;
+        lastY = y;
+      };
+    }
+
     requestAnimationFrame(doFrame);
   };
 
-  const doFrame = () => {
-    const now = Date.now() / 1000;
-    scene.pointLightPosition[2] = 10;
+  const doFrame = useCallback(() => {
+    scene.pointLightPosition[2] = 2;
     cubes[cubes.length - 1].x = scene.pointLightPosition[0];
     cubes[cubes.length - 1].y = scene.pointLightPosition[1];
     cubes[cubes.length - 1].z = scene.pointLightPosition[2];
     renderer.frame(camera, scene);
     requestAnimationFrame(doFrame);
-  };
+  }, [isMouseDown]);
 
   useEffect(() => {
     if (!scene) {
