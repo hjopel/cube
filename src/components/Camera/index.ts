@@ -39,7 +39,7 @@ export class Camera {
 
   public getProjectionMatrix(): mat4 {
     let projectionMatrix = mat4.create();
-    mat4.perspective(
+    mat4.perspectiveZO(
       projectionMatrix,
       this.fovy,
       this.aspect,
