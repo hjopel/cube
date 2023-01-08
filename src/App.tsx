@@ -44,14 +44,22 @@ function App() {
     }
 
     camera = new Camera(window.innerWidth / window.innerHeight);
-    camera.z = 10;
+    camera.z = 20;
     // camera.y = 0;
     scene = new Scene();
     renderer = new WebGPURenderer();
     try {
       await renderer.init({ device: dvc, context, canvas: canvasRef.current! });
-
-      cubeLayout.map((param) =>
+      cubeLayout.forEach((param) => {
+        scene.add(
+          new Cube({
+            device: dvc,
+            parameters: { ...param, z: 2 },
+            // color: { r: 0.01, g: 0.01, b: 0.9 },
+            lightDataBuffer: renderer.lightDataBuffer,
+            cameraUniformBuffer: renderer.cameraUniformBuffer,
+          })
+        );
         scene.add(
           new Cube({
             device: dvc,
@@ -60,8 +68,17 @@ function App() {
             lightDataBuffer: renderer.lightDataBuffer,
             cameraUniformBuffer: renderer.cameraUniformBuffer,
           })
-        )
-      );
+        );
+        scene.add(
+          new Cube({
+            device: dvc,
+            parameters: { ...param, z: -2 },
+            // color: { r: 0.01, g: 0.01, b: 0.9 },
+            lightDataBuffer: renderer.lightDataBuffer,
+            cameraUniformBuffer: renderer.cameraUniformBuffer,
+          })
+        );
+      });
 
       const lightDebugCube = new Cube({
         parameters: { scaleX: 0.1, scaleY: 0.1, scaleZ: 0.1 },
@@ -126,7 +143,7 @@ function App() {
   };
 
   const doFrame = useCallback(() => {
-    scene.pointLightPosition[2] = 2;
+    scene.pointLightPosition[2] = 10;
     cubes[cubes.length - 1].x = scene.pointLightPosition[0];
     cubes[cubes.length - 1].y = scene.pointLightPosition[1];
     cubes[cubes.length - 1].z = scene.pointLightPosition[2];
